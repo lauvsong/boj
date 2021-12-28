@@ -13,8 +13,6 @@ offset = sum(heights) - 100
 spy1, spy2 = findSpy()
 heights.sort()
 
-cnt = 0
 for index, height in enumerate(heights):
     if height == spy1 or height == spy2: continue
     print(height)
-    cnt += height
