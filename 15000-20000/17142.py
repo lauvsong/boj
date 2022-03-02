@@ -4,9 +4,10 @@ import sys
 import copy
 input = sys.stdin.readline
 
-EMPTY = '0'
-WALL = '1'
-INACTIVE = '2'
+EMPTY = 0
+WALL = 1
+INACTIVE = 2
+ACTIVE = 3
 
 def bfs(comb):
     dist = copy.deepcopy(grid)
@@ -16,49 +17,46 @@ def bfs(comb):
     dy = [0,0,-1,1]
 
     for x,y in comb:
-        dist[x][y] = 0
+        dist[x][y] = ACTIVE
 
     q = deque(comb)
-    cnt = 0
+    filled = 0
 
     while q:
-        if empty_cnt == cnt:
+        if empty_cnt == filled:
             break
 
-        x,y = q.popleft()
-        for i in range(4):
-            nx = x + dx[i]
-            ny = y + dy[i]
+        size = len(q)
 
-            if 0 <= nx < n  and 0 <= ny < n:
+        for _ in range(size):
+            x,y = q.popleft()
 
-                if dist[nx][ny] == WALL:
-                    continue
+            for i in range(4):
+                nx = x + dx[i]
+                ny = y + dy[i]
 
-                if dist[nx][ny] == INACTIVE:
-                    dist[nx][ny] = dist[x][y] + 1
-                    time = dist[nx][ny]
-                    q.append((nx,ny))
-                
-                elif dist[nx][ny] == EMPTY:
-                    cnt += 1
-                    dist[nx][ny] = dist[x][y] + 1
-                    time = dist[nx][ny]
+                if 0 <= nx < n  and 0 <= ny < n:
+                    if dist[nx][ny] == ACTIVE: continue
+                    if dist[nx][ny] == WALL: continue
+                    
+                    if dist[nx][ny] == EMPTY:
+                        filled += 1
+                    
+                    dist[nx][ny] = ACTIVE
                     q.append((nx,ny))
 
+        time += 1
         if ans <= time:
             return sys.maxsize
 
-    for row in dist:
-        if EMPTY in row:
-            time = -1
-            break
+    if empty_cnt != filled:
+        time = -1
 
     return time
             
 
 n,m = map(int, input().split())
-grid = [list(map(str, input().split())) for _ in range(n)]
+grid = [list(map(int, input().split())) for _ in range(n)]
 viruses = []
 empty_cnt = 0
 
